@@ -1,0 +1,33 @@
+name: Python Workflow
+
+# Trigger the workflow on push or pull request events to the main branch
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install fivetran-connector-sdk
+
+      - name: Deploy to fivetran
+        working-directory: "./connector"
+        env:
+          FIVETRAN_API_KEY: ${{ secrets.FIVETRAN_API_KEY }} # Expose the secret as an environment variable
+          FIVETRAN_DESTINATION: ${{ secrets.FIVETRAN_DESTINATION }} # Expose the secret as an environment variable
+        run: |
+          ls
+          fivetran deploy --api-key $FIVETRAN_API_KEY --destination $FIVETRAN_DESTINATION --connection josh_custom_connector
