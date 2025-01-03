@@ -27,7 +27,8 @@ def schema(configuration: dict):
                 "name": "STRING",  # String column for the period name.
                 "startTime": "UTC_DATETIME",  # UTC date-time column for the start time.
                 "endTime": "UTC_DATETIME",  # UTC date-time column for the end time.
-                "temperature": "INT",  # Integer column for the temperature.
+                "temperature": "INT",
+                "uselessField": "STRING"  # Integer column for the temperature.
             },
         }
     ]
@@ -76,7 +77,8 @@ def update(configuration: dict, state: dict):
                             "name": period["name"],  # Name of the period.
                             "startTime": period["startTime"],  # Start time of the period.
                             "endTime": period["endTime"],  # End time of the period.
-                            "temperature": period["temperature"]  # Temperature during the period.
+                            "temperature": period["temperature"],  # Temperature during the period.
+                            "uselessField": "Hello, world!"
                         })
 
         # Update the cursor to the end time of the current period.
