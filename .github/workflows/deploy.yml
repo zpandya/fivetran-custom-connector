@@ -29,5 +29,4 @@ jobs:
           FIVETRAN_API_KEY: ${{ secrets.FIVETRAN_API_KEY }} # Expose the secret as an environment variable
           FIVETRAN_DESTINATION: ${{ secrets.FIVETRAN_DESTINATION }} # Expose the secret as an environment variable
         run: |
-          ls
-          fivetran deploy --api-key $FIVETRAN_API_KEY --destination $FIVETRAN_DESTINATION --connection josh_custom_connector
+          fivetran deploy --api-key $FIVETRAN_API_KEY --destination $FIVETRAN_DESTINATION --connection josh_custom_connector --force
