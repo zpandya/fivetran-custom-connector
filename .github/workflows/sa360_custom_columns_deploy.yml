@@ -2,7 +2,7 @@ name: Deploy SA360 Custom Column Connector
 # Trigger the workflow on push or pull request events to the main branch
 on:
   push:
-    branches: [custom-columns]
+    branches: [main]
 
 jobs:
   build:
@@ -44,7 +44,6 @@ jobs:
         working-directory: "./sa360-custom-columns"
         env:
           FIVETRAN_API_KEY: ${{ secrets.FIVETRAN_API_KEY }} # Expose the secret as an environment variable
-          FIVETRAN_DESTINATION: ${{ secrets.FIVETRAN_UAT_DESTINATION }} # Expose the secret as an environment variable
+          FIVETRAN_DESTINATION: ${{ secrets.FIVETRAN_DESTINATION }} # Expose the secret as an environment variable
         run: |
-          ls
           fivetran deploy --api-key $FIVETRAN_API_KEY --destination $FIVETRAN_DESTINATION --configuration ./configuration.json --connection sa360_custom_columns --force
