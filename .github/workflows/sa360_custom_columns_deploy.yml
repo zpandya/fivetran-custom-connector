@@ -47,4 +47,4 @@ jobs:
           FIVETRAN_DESTINATION: ${{ secrets.FIVETRAN_UAT_DESTINATION }} # Expose the secret as an environment variable
         run: |
           ls
-          fivetran deploy --api-key $FIVETRAN_API_KEY --destination $FIVETRAN_DESTINATION --connection sa360_custom_columns --force
+          fivetran deploy --api-key $FIVETRAN_API_KEY --destination $FIVETRAN_DESTINATION --configuration ./configuration.json --connection sa360_custom_columns --force
