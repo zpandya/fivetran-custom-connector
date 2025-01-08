@@ -40,14 +40,10 @@ jobs:
           }
           EOF
 
-      - name: Confirm contents (optional)
+      - name: Deploy to fivetran
         working-directory: "./sa360-custom-columns"
-        run: cat config.json
-
-      # - name: Deploy to fivetran
-      #   working-directory: "./sa360-custom-columns"
-      #   env:
-      #     FIVETRAN_API_KEY: ${{ secrets.FIVETRAN_API_KEY }} # Expose the secret as an environment variable
-      #     FIVETRAN_DESTINATION: ${{ secrets.FIVETRAN_DESTINATION }} # Expose the secret as an environment variable
-      #   run: |
-      #     fivetran deploy --api-key $FIVETRAN_API_KEY --destination $FIVETRAN_DESTINATION --connection sa360_custom_columns --force
+        env:
+          FIVETRAN_API_KEY: ${{ secrets.FIVETRAN_API_KEY }} # Expose the secret as an environment variable
+          FIVETRAN_DESTINATION: ${{ secrets.FIVETRAN_UAT_DESTINATION }} # Expose the secret as an environment variable
+        run: |
+          fivetran deploy --api-key $FIVETRAN_API_KEY --destination $FIVETRAN_DESTINATION --connection sa360_custom_columns --force
