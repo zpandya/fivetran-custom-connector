@@ -113,7 +113,6 @@ def update(configuration: dict, state: dict):
                 }
                 yield op.upsert(table="custom_columns", data=data)
 
-            print(f"Getting data for account {a}")
             if len(columns) > 0:
                 column_fields = ",".join(
                     [f"custom_columns.id[{i['id']}]" for i in columns]

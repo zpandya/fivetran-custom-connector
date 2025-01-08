@@ -83,8 +83,6 @@ def get_customer_clients(config: dict, session: rq.Session, submanager_id=None) 
     )
     url = f"https://searchads360.googleapis.com/v0/customers/{customer_id}/searchAds360:search"
 
-    # We can pass the query in a POST body or GET params; depends on the API docs.
-    # If the API expects "query" in the body, you might do json={"query": query} or data={"query": query}.
     response = make_sa360_request(
         config,
         method="POST",
@@ -93,7 +91,6 @@ def get_customer_clients(config: dict, session: rq.Session, submanager_id=None) 
         data={"query": query},
     )
 
-    # parse and return whatever is relevant
     json_data = response.json()
     results = [i["customerClient"]["id"] for i in json_data.get("results", [])]
     if len(results) == 0:
