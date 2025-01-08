@@ -1,5 +1,4 @@
-name: Python Workflow
-
+name: Deploy josh_custom_connector (weather-example)
 # Trigger the workflow on push or pull request events to the main branch
 on:
   push:
@@ -24,7 +23,7 @@ jobs:
           pip install fivetran-connector-sdk
 
       - name: Deploy to fivetran
-        working-directory: "./connector"
+        working-directory: "./weather-example"
         env:
           FIVETRAN_API_KEY: ${{ secrets.FIVETRAN_API_KEY }} # Expose the secret as an environment variable
           FIVETRAN_DESTINATION: ${{ secrets.FIVETRAN_DESTINATION }} # Expose the secret as an environment variable
