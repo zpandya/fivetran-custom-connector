@@ -81,7 +81,7 @@ def update(configuration: dict, state: dict):
             continue
 
         columns = get_custom_columns(configuration, session, account)
-        managed_accounts = get_customer_clients(configuration, session, account)
+        managed_accounts = list(filter(lambda z: z not in submanager_accounts, get_customer_clients(configuration, session, account)))
         managed_accounts.sort(key=lambda x: int(x))
         managed_account_cursor = state.get(
             "managed_account_cursor", managed_accounts[0]
