@@ -53,7 +53,7 @@ def update(configuration: dict, state: dict):
     column_data_cursor = state.get("column_data_cursor", None)
     iterative_sync_cursor = state.get("iterative_sync_cursor", None)
 
-    submanager_accounts = ["1115771062", "9134099894"]
+    submanager_accounts = list(map(lambda z: z.strip(), configuration.get("submanager_account_ids", "").split(",")))
     submanager_accounts.sort(key=lambda x: int(x))
     submanager_cursor = state.get("submanager_cursor", submanager_accounts[0])
     managed_account_cursor = state.get("managed_account_cursor", None)

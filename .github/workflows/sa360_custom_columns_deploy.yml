@@ -29,6 +29,7 @@ jobs:
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
           GOOGLE_LOGIN_CUSTOMER_ID: ${{ secrets.GOOGLE_LOGIN_CUSTOMER_ID }}
+          SUBMANAGER_ACCOUNT_IDS: ${{ secrets.SUBMANAGER_ACCOUNT_IDS }}
         run: |
           echo "Creating config.json with provided secrets..."
           cat <<EOF > configuration.json
@@ -36,7 +37,8 @@ jobs:
             "google_client_id": "$GOOGLE_CLIENT_ID",
             "google_client_secret": "$GOOGLE_CLIENT_SECRET",
             "google_refresh_token": "$GOOGLE_REFRESH_TOKEN",
-            "google_login_customer_id": "$GOOGLE_LOGIN_CUSTOMER_ID"
+            "google_login_customer_id": "$GOOGLE_LOGIN_CUSTOMER_ID",
+            "submanager_account_ids": "$SUBMANAGER_ACCOUNT_IDS"
           }
           EOF
 
