@@ -45,6 +45,7 @@ def get_date_diff(date_str_1, date_str_2):
 
 # https://fivetran.com/docs/connectors/connector-sdk/technical-reference#update
 def update(configuration: dict, state: dict):
+    log.info("Connector started successfully.")
     session = get_sa360_session(configuration)
 
     column_data_cursor = state.get("column_data_cursor", None)
@@ -55,7 +56,7 @@ def update(configuration: dict, state: dict):
     submanager_cursor = state.get("submanager_cursor", submanager_accounts[0])
     managed_account_cursor = state.get("managed_account_cursor", None)
     for account in submanager_accounts:
-
+        log.info(f"Beginning sync for submanager {account}")
         if int(account) < int(submanager_cursor):
             continue
 
@@ -67,6 +68,7 @@ def update(configuration: dict, state: dict):
         )
 
         for a in managed_accounts:
+            log.info(f"Beginning sync for account {a}")
             if int(a) < int(managed_account_cursor):
                 continue
 
@@ -80,9 +82,11 @@ def update(configuration: dict, state: dict):
                     if iterative_sync_cursor is None
                     else iterative_sync_cursor
                 )
+                log.info("Beginning fetch")
                 for idx, item in enumerate(generate_custom_column_rows(configuration, session, a, column_fields, start_date)):
 
                     if idx % 2500 == 0:
+                        log.info(f"Checkpoint at {idx} records")
                         yield op.checkpoint({
                                     "submanager_cursor": account,
                                     "managed_account_cursor": a,

@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import requests as rq
+from fivetran_connector_sdk import Logging as log
 
 
 import time
@@ -170,16 +171,16 @@ def get_custom_column_data(config, session, customer_id, custom_columns, date_cu
             f"WHERE segments.date BETWEEN '{start_date}' AND '{datetime.now().date().isoformat()}' "
             f"ORDER BY segments.date ASC"
         ),
-        "pageSize": 50,
+        "pageSize": 5000,
     }
-
+    page = 0
     next_page_token = None
     while True:
         if next_page_token:
             payload["pageToken"] = next_page_token
         else:
             payload.pop("pageToken", None)
-
+        log.info(f"Fetching page {page}")
         response = make_sa360_request(
             config, method="POST", url=url, session=session, json=payload
         )
@@ -189,6 +190,7 @@ def get_custom_column_data(config, session, customer_id, custom_columns, date_cu
 
         # Check if a nextPageToken was provided for additional pages
         next_page_token = json_data.get("nextPageToken")
+        page += 1
         if not next_page_token:
             break
 
