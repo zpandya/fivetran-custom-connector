@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import requests as rq
 
@@ -65,8 +65,6 @@ def get_access_token(client_id, client_secret, refresh_token) -> str:
     payload = "&".join([f"{key}={val}" for key, val in data.items()])
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-    print("PAYLOAD", payload)
-    print("HEADERS", headers)
     response = rq.post(url, data=payload, headers=headers)
     response.raise_for_status()
     return response.json()["access_token"]
@@ -133,7 +131,6 @@ def get_custom_column_data(config, session, customer_id, custom_columns, date_cu
     payload = {
         "query": f"SELECT campaign.id,  campaign.name, ad_group_criterion.keyword.text, ad_group_criterion.keyword.match_type, metrics.clicks, metrics.impressions, metrics.cost_micros, customer.currency_code, customer.descriptive_name, segments.date, {custom_columns} FROM keyword_view WHERE segments.date BETWEEN '{start_date}' AND '{datetime.now().date().isoformat()}' ORDER BY segments.date ASC"
     }
-    print("CC PAYLOAD", payload)
     response = make_sa360_request(
         config, method="POST", url=url, session=session, data=payload
     )
