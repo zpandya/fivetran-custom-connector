@@ -119,11 +119,11 @@ def update(configuration: dict, state: dict):
                     for i in results:
                         campaign_id = i["campaign"]["id"]
                         campaign_name = i["campaign"]["name"]
-                        clicks = i["metrics"]["clicks"]
-                        impressions = i["metrics"]["impressions"]
-                        cost = i["metrics"]["costMicros"]
-                        kw_text = i["adGroupCriterion"]["keyword"]["text"]
-                        kw_match_type = i["adGroupCriterion"]["keyword"]["matchType"]
+                        clicks = i.get("metrics", {}).get("clicks", "0")
+                        impressions = i.get("metrics", {}).get("impressions", "0")
+                        cost = i.get("metrics", {}).get("costMicros", "0")
+                        kw_text = i.get("adGroupCriterion", {}).get("keyword", {}).get("text", "")
+                        kw_match_type = i.get("adGroupCriterion", {}).get("keyword", {}).get("matchType", "")
                         account_name = i["customer"]["descriptiveName"]
                         currency = i["customer"]["currencyCode"]
                         date = i["segments"]["date"]

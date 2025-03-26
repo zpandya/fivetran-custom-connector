@@ -3,6 +3,8 @@ name: Deploy SA360 Custom Keyword Connector
 on:
   push:
     branches: [main]
+    paths:
+      - "sa360-custom-keywords/**"
 
 jobs:
   build:

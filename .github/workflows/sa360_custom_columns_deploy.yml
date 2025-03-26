@@ -3,6 +3,8 @@ name: Deploy SA360 Custom Column Connector
 on:
   push:
     branches: [main]
+    paths:
+      - "sa360-custom-columns/**"
 
 jobs:
   build:
