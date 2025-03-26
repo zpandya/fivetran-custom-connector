@@ -3,6 +3,7 @@ from fivetran_connector_sdk import Connector
 from fivetran_connector_sdk import Logging as log
 from fivetran_connector_sdk import Operations as op
 from search_ads_360 import (
+    generate_custom_column_rows,
     get_sa360_session,
     get_customer_clients,
     get_custom_columns,
@@ -55,24 +56,6 @@ def update(configuration: dict, state: dict):
     managed_account_cursor = state.get("managed_account_cursor", None)
     for account in submanager_accounts:
 
-        # increment cursor when we get to a new submanager account
-        if managed_account_cursor is None:
-            yield op.checkpoint(
-                {
-                    "submanager_cursor": account,
-                    "iterative_sync_cursor": iterative_sync_cursor,
-                    "column_data_cursor": column_data_cursor,
-                }
-            )
-        else:
-            yield op.checkpoint(
-                {
-                    "submanager_cursor": account,
-                    "managed_account_cursor": managed_account_cursor,
-                    "iterative_sync_cursor": iterative_sync_cursor,
-                    "column_data_cursor": column_data_cursor,
-                }
-            )
         if int(account) < int(submanager_cursor):
             continue
 
@@ -84,20 +67,8 @@ def update(configuration: dict, state: dict):
         )
 
         for a in managed_accounts:
-
-            # increment cursor when we get to a new managed account
-            yield op.checkpoint(
-                {
-                    "submanager_cursor": account,
-                    "managed_account_cursor": a,
-                    "iterative_sync_cursor": iterative_sync_cursor,
-                    "column_data_cursor": column_data_cursor,
-                }
-            )
-
             if int(a) < int(managed_account_cursor):
                 continue
-
 
             if len(columns) > 0:
                 column_fields = ",".join(
@@ -109,68 +80,17 @@ def update(configuration: dict, state: dict):
                     if iterative_sync_cursor is None
                     else iterative_sync_cursor
                 )
-                column_data = get_custom_column_data(
-                    configuration, session, a, column_fields, start_date
-                )
-                if len(column_data) > 0:
-                    results = column_data[0].get("results", [])
-                    column_headers = column_data[0].get("customColumnHeaders", [])
-                    _start_date = None
-                    for i in results:
-                        campaign_id = i["campaign"]["id"]
-                        campaign_name = i["campaign"]["name"]
-                        clicks = i.get("metrics", {}).get("clicks", "0")
-                        impressions = i.get("metrics", {}).get("impressions", "0")
-                        cost = i.get("metrics", {}).get("costMicros", "0")
-                        kw_text = i.get("adGroupCriterion", {}).get("keyword", {}).get("text", "")
-                        kw_match_type = i.get("adGroupCriterion", {}).get("keyword", {}).get("matchType", "")
-                        account_name = i["customer"]["descriptiveName"]
-                        currency = i["customer"]["currencyCode"]
-                        date = i["segments"]["date"]
-                        custom_columns = i["customColumns"]
+                for idx, item in enumerate(generate_custom_column_rows(configuration, session, a, column_fields, start_date)):
 
-
-                        if _start_date is None:
-                            _start_date = date
-                            yield op.checkpoint(
-                                {
+                    if idx % 2500 == 0:
+                        yield op.checkpoint({
                                     "submanager_cursor": account,
                                     "managed_account_cursor": a,
                                     "iterative_sync_cursor": iterative_sync_cursor,
-                                    "column_data_cursor": date,
-                                }
-                            )
-                        elif get_date_diff(_start_date, date) < 0:
-                            continue
-                        elif get_date_diff(_start_date, date) > 5:
-                            _start_date = date
-                            yield op.checkpoint(
-                                {
-                                    "submanager_cursor": account,
-                                    "managed_account_cursor": a,
-                                    "iterative_sync_cursor": iterative_sync_cursor,
-                                    "column_data_cursor": date,
-                                }
-                            )
-                        for column_value, column in zip(custom_columns, column_headers):
-                            val = column_value.get("doubleValue", None)
-                            column_id = column["id"]
-                            data = {
-                                "column_id": column_id,
-                                "value": val,
-                                "date": date,
-                                "campaign_id": campaign_id,
-                                "customer_id": a,
-                                "keyword_text": kw_text,
-                                "keyword_match_type": kw_match_type,
-                                "campaign_name": campaign_name,
-                                "account_name": account_name,
-                                "currency_code": currency,
-                                "clicks": clicks,
-                                "impressions": impressions,
-                                "cost": cost
-                            }
-                            yield op.upsert(table="custom_column_metrics", data=data)
+                                    "column_data_cursor": item["date"],
+                            })
+                    
+                    yield op.upsert(table="custom_column_metrics", data=item)
 
     yield op.checkpoint(
         {
