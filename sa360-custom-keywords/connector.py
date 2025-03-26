@@ -85,8 +85,8 @@ def update(configuration: dict, state: dict):
                 log.info("Beginning fetch")
                 for idx, item in enumerate(generate_custom_column_rows(configuration, session, a, column_fields, start_date)):
 
-                    if idx % 2500 == 0:
-                        log.info(f"Checkpoint at {idx} records")
+                    if idx % 10000 == 0:
+                        log.info(f"Checkpoint at {idx} records -- {item["date"]}")
                         yield op.checkpoint({
                                     "submanager_cursor": account,
                                     "managed_account_cursor": a,
