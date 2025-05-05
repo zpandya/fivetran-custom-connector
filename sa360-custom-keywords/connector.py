@@ -107,6 +107,8 @@ def update(configuration: dict, state: dict):
                 ):
 
                     if idx % 10000 == 0:
+                        log.info(f"Processed {idx} records -- {item["date"]}")
+                    if idx % 50000 == 0 and idx != 0:
                         log.info(f"Checkpoint at {idx} records -- {item["date"]}")
                         yield op.checkpoint(
                             {
