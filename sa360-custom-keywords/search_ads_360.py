@@ -163,7 +163,7 @@ def get_custom_column_data(config, session, customer_id, custom_columns, date_cu
     # Base payload for the query with pageSize set to 5000
     payload = {
         "query": (
-            f"SELECT campaign.id, campaign.name, "
+            f"SELECT  ad_group.id,ad_group.name, campaign.id, campaign.name, "
             f"ad_group_criterion.keyword.text, ad_group_criterion.keyword.match_type, "
             f"metrics.clicks, metrics.impressions, metrics.cost_micros, "
             f"customer.currency_code, customer.descriptive_name, segments.date, {custom_columns} "
